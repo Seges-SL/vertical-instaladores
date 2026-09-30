@@ -1,5 +1,7 @@
 # vertical-instaladores
 
+Migración 14.0 → 17.0: ver [MIGRATION_14_TO_17.md](MIGRATION_14_TO_17.md).
+
 Lista Módulos
 ----------------
 Módulo | Documentación | Resumen
