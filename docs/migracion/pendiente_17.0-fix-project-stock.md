@@ -89,3 +89,5 @@ vacíos, ejecutar la función y comprobar que quedan rellenos.
 - Decidir una única vía para los apuntes analíticos de material:
   `project.task.action_done()` o la validación del albarán
   (`stock_move_with_account_analytic_line`). Con las dos activas se duplican.
+  Análisis, opciones y recomendación en
+  [docs/pendiente/apuntes_analiticos_duplicados.md](../pendiente/apuntes_analiticos_duplicados.md).
