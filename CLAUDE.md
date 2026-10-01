@@ -6,7 +6,9 @@
 - Versión de Odoo: 17.0
 - Licencia para módulos nuevos: AGPL-3 (https://www.gnu.org/licenses/agpl-3.0)
 - Autor en el manifest: Seges
-- Código de referencia (solo lectura, para consultar; no sirve para ejecutar Odoo):
+- Código de referencia (solo lectura, para consultar; no sirve para ejecutar Odoo). Contiene
+  todo el código de cada rama (solo faltan traducciones y estáticos); si un módulo no está,
+  no existe en esa rama:
   - /opt/odoo-src/17.0
   - /opt/odoo-src/14.0
   - /opt/odoo-src/migracion

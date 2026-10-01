@@ -10,7 +10,10 @@
       "Bash(python3 -m py_compile *)",
       "Bash(xmllint --noout *)",
       "Bash(python3 ~/.claude/hooks/odoo_lint.py --revisar *)",
-      "Bash(odoo-dev *)"
+      "Bash(odoo-dev *)",
+      "Bash(git show *)",
+      "Bash(git branch --show-current)",
+      "Bash(git merge-base *)"
     ],
     "deny": [
       "Bash(git push *)",
@@ -25,7 +28,14 @@
     ],
     "ask": [
       "Bash(odoo-dev 14 bd-cargar *)",
-      "Bash(odoo-dev 17 bd-cargar *)"
+      "Bash(odoo-dev 17 bd-cargar *)",
+      "Bash(git stash *)",
+      "Bash(git stash)",
+      "Bash(git checkout *)",
+      "Bash(git reset *)",
+      "Bash(git restore *)",
+      "Bash(git switch *)",
+      "Bash(git clean *)"
     ]
   }
 }
