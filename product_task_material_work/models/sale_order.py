@@ -56,7 +56,13 @@ class SaleOrder(models.Model):
             default_location_dest_id = self.env['ir.default'].with_company(
                 order.company_id.id)._get_model_defaults('sale.order').get('location_dest_id')
             
-            picking_type = self.env.ref('product_task_material_work.stock_picking_type_task_material')
+            # Al instalar el módulo (o actualizar desde 14.0) este compute se
+            # ejecuta antes de cargar data/stock_picking_type_data.xml; esos
+            # pedidos se completan después con _recompute_empty_stock_options().
+            picking_type = self.env.ref(
+                'product_task_material_work.stock_picking_type_task_material',
+                raise_if_not_found=False,
+            ) or self.env['stock.picking.type']
 
             if default_picking_type_id is not None:
                 order.picking_type_id = default_picking_type_id
@@ -72,6 +78,19 @@ class SaleOrder(models.Model):
                 order.location_dest_id = default_location_dest_id
             else:
                 order.location_dest_id = picking_type.default_location_dest_id.id
+
+    @api.model
+    def _recompute_empty_stock_options(self):
+        """Rellena tipo de operación y ubicaciones de los pedidos que los
+        tienen vacíos. Se usa en el post_init_hook y en la migración desde
+        14.0, cuando ya existe el tipo de operación del módulo."""
+        orders = self.with_context(active_test=False).search([
+            ('picking_type_id', '=', False),
+            ('location_id', '=', False),
+            ('location_dest_id', '=', False),
+        ])
+        orders._compute_stock_options()
+        return orders
 
     def action_confirm(self):
         res = super().action_confirm()
