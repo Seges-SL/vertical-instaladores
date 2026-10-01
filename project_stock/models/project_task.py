@@ -1,11 +1,10 @@
 # Copyright 2022 Tecnativa - Víctor Martínez
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl)
-from odoo import _, api, fields, models
-from odoo.exceptions import UserError
 from markupsafe import Markup
 
-import logging
-_logger = logging.getLogger(__name__)
+from odoo import _, api, fields, models
+from odoo.exceptions import UserError
+
 
 class ProjectTask(models.Model):
     _name = "project.task"
@@ -141,7 +140,7 @@ class ProjectTask(models.Model):
                     and (x.location_id != loc or x.location_dest_id != loc_dest)
                 )
             )
-            moves.update(
+            moves.write(
                 {
                     "warehouse_id": location.warehouse_id.id,
                     "location_id": location.id,
@@ -150,40 +149,42 @@ class ProjectTask(models.Model):
                 }
             )
         self.action_assign()
-    
+
     def _update_moves_group_id(self):
         for item in self:
-            item._check_tasks_with_pending_moves()
             picking_type = item.picking_type_id or item.project_id.picking_type_id
             location = item.location_id or item.project_id.location_id
             location_dest = item.location_dest_id or item.project_id.location_dest_id
             moves = item.move_ids.filtered(
-                lambda x, loc=location, loc_dest=location_dest, pick_type= picking_type: (
+                lambda x, loc=location, loc_dest=location_dest, pick_type=picking_type: (
                     x.state not in ("cancel", "done")
-                    and x.location_id == loc and x.location_dest_id == loc_dest and x.picking_type_id == pick_type
+                    and x.location_id == loc
+                    and x.location_dest_id == loc_dest
+                    and x.picking_type_id == pick_type
                 )
             )
-            #_logger.debug("MOVES: %s\n", str(moves))
-            moves.update(
-                {
-                    "group_id": item.group_id.id,
-                    "task_id": item.id,
-                }
+            # Moves already in a picking keep the picking's procurement group
+            moves.filtered(lambda x: not x.picking_id).write(
+                {"group_id": item.group_id.id}
             )
+            item.move_ids.filtered(
+                lambda x: not x.task_id and x.state not in ("cancel", "done")
+            ).write({"task_id": item.id})
+
     def _update_analytic_distribution_info(self):
         for item in self:
-            item._check_tasks_with_pending_moves()
             picking_type = item.picking_type_id or item.project_id.picking_type_id
             location = item.location_id or item.project_id.location_id
             location_dest = item.location_dest_id or item.project_id.location_dest_id
             moves = item.move_ids.filtered(
-                lambda x, loc=location, loc_dest=location_dest, pick_type= picking_type: (
+                lambda x, loc=location, loc_dest=location_dest, pick_type=picking_type: (
                     x.state not in ("cancel", "done")
-                    and x.location_id == loc and x.location_dest_id == loc_dest and x.picking_type_id == pick_type
+                    and x.location_id == loc
+                    and x.location_dest_id == loc_dest
+                    and x.picking_type_id == pick_type
                 )
             )
-            #_logger.debug("ANALYTIC DISTRIBUTION MOVES UPDATE: %s\n", str(moves))
-            moves.update(
+            moves.write(
                 {
                     "analytic_distribution": item.stock_analytic_distribution,
                 }
@@ -196,43 +197,24 @@ class ProjectTask(models.Model):
     def action_confirm(self):
         # 1. Guardamos los pickings que ya existían previamente
         old_pickings = self.mapped("move_ids.picking_id")
-        """ _logger.debug(
-                    "\n================ ALBARANES ANTIGUOS ================\n"
-                    "Tarea: %s\n"
-                    "Albaranes (Pickings): %s\n"
-                    "Nombres de Albaranes: %s\n"
-                    "=====================================================",
-                    self.name,
-                    old_pickings,
-                    old_pickings.mapped('name')
-                ) """
         # 2. Ejecutamos la lógica original de confirmación (creará los nuevos pickings)
         self.move_ids._action_confirm()
         self.move_ids.filtered(
             lambda move: move.state not in ("draft", "cancel", "done")
         )._trigger_scheduler()
-        
+
         # 3. Calculamos la diferencia para obtener los pickings recién generados
         new_pickings = self.mapped("move_ids.picking_id") - old_pickings
-        """ _logger.debug(
-                    "\n================ ALBARANES NUEVOS ================\n"
-                    "Tarea: %s\n"
-                    "Albaranes (Pickings): %s\n"
-                    "Nombres de Albaranes: %s\n"
-                    "=====================================================",
-                    self.name,
-                    new_pickings,
-                    new_pickings.mapped('name')
-                ) """
         # 4. Iteramos para dejar el mensaje con enlace en el chatter del nuevo albarán
         for task in self:
-            task_pickings = new_pickings.filtered(lambda p: p in task.move_ids.picking_id)
+            task_pickings = new_pickings & task.move_ids.picking_id
             for picking in task_pickings:
                 # Construimos el enlace seguro en HTML nativo de Odoo apuntando al id de la tarea
                 task_link = task._get_html_link()
                 # Formateamos el mensaje soportando multi-idioma (_)
-                msg = Markup(_("Este albarán ha sido generado desde la tarea: %s")) % task_link
-                # Posteamos en el hilo (chatter) del albarán generado
+                msg = Markup(_("This transfer was generated from task: %s")) % task_link
+                # Posteamos en el hilo (chatter) del albarán generado. sudo(): el
+                # usuario de proyecto puede no tener escritura en stock.picking
                 picking.sudo().message_post(
                     body=msg,
                     message_type='comment',
@@ -294,6 +276,7 @@ class ProjectTask(models.Model):
         return action
 
     def action_view_delivery(self):
+        self.ensure_one()
         action = self.env["ir.actions.actions"]._for_xml_id("stock.action_picking_tree_all")
         pickings = self.move_ids.mapped('picking_id')
 
@@ -302,22 +285,22 @@ class ProjectTask(models.Model):
         elif pickings:
             form_view = [(self.env.ref('stock.view_picking_form').id, 'form')]
             if 'views' in action:
-                action['views'] = form_view + [(state,view) for state,view in action['views'] if view != 'form']
+                action['views'] = form_view + [(view_id, view_type) for view_id, view_type in action['views'] if view_type != 'form']
             else:
                 action['views'] = form_view
             action['res_id'] = pickings.id
         else:
             action['domain'] = [('id', '=', False)]
-            
+
         # Preparamos los valores para el contexto
         picking_type_id = False
         group_id = False
 
         if pickings:
             # Si hay albaranes, priorizamos los de salida o tomamos el primero
-            picking_out = pickings.filtered(lambda l: l.picking_type_id.code == 'outgoing')
+            picking_out = pickings.filtered(lambda p: p.picking_type_id.code == 'outgoing')
             picking = picking_out[0] if picking_out else pickings[0]
-            
+
             picking_type_id = picking.picking_type_id.id
             group_id = picking.group_id.id
         else:
@@ -330,12 +313,16 @@ class ProjectTask(models.Model):
                 group_id = self.group_id.id
 
         # Construimos el contexto final
-        cleaned_context = {k: v for k, v in self._context.items() if k != 'form_view_ref'}
+        cleaned_context = {
+            k: v
+            for k, v in self._context.items()
+            if k != 'form_view_ref' and not k.startswith('default_')
+        }
         ctx_vals = {
             'default_partner_id': self.partner_id.id,
             'default_origin': self.name,
         }
-        
+
         if picking_type_id:
             ctx_vals['default_picking_type_id'] = picking_type_id
         if group_id:
@@ -349,23 +336,22 @@ class ProjectTask(models.Model):
         if "stage_id" in vals:
             stage = self.env["project.task.type"].browse(vals.get("stage_id"))
             if stage.done_stock_moves:
-                if not self.group_id:
-                    self.group_id = self.env["procurement.group"].create(
-                        self._prepare_procurement_group_vals()
+                # sudo(): the project user must be able to close the task even
+                # without stock permissions; these are internal operations.
+                tasks = self.sudo()
+                for task in tasks.filtered(lambda t: not t.group_id):
+                    task.group_id = self.env["procurement.group"].create(
+                        task._prepare_procurement_group_vals()
                     )
-                self._update_moves_group_id()
-
-                if self.stock_analytic_distribution:
-                    #_logger.debug("ANALYTIC DISTRIBUTION\n")
-                    self._update_analytic_distribution_info()
-                # Avoid permissions error if the user does not have access to stock.
-                #_logger.debug("ACTION ASSIGN\n")
-                self.sudo().action_assign()
+                tasks._update_moves_group_id()
+                tasks_with_distribution = tasks.filtered("stock_analytic_distribution")
+                if tasks_with_distribution:
+                    tasks_with_distribution._update_analytic_distribution_info()
+                tasks.action_assign()
 
         # Update info
         field_names = ("location_id", "location_dest_id")
         if any(vals.get(field) for field in field_names):
-            #_logger.debug("UPDATE MOVES: %s\n", str(self.move_ids.picking_id))
             self._update_moves_info()
         return res
 

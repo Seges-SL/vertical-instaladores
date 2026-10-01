@@ -110,6 +110,11 @@ msgid "Default location to which materials are consumed."
 msgstr ""
 
 #. module: project_stock
+#: model_terms:ir.ui.view,arch_db:project_stock.view_task_form2
+msgid "Deliveries"
+msgstr ""
+
+#. module: project_stock
 #: model:ir.model.fields,field_description:project_stock.field_project_project__location_dest_id
 #: model:ir.model.fields,field_description:project_stock.field_project_task__location_dest_id
 msgid "Destination Location"
@@ -307,6 +312,12 @@ msgstr ""
 #. module: project_stock
 #: model:ir.model.fields,help:project_stock.field_project_task__unreserve_visible
 msgid "Technical field to check when we can unreserve"
+msgstr ""
+
+#. module: project_stock
+#: code:addons/project_stock/models/project_task.py:0
+#, python-format
+msgid "This transfer was generated from task: %s"
 msgstr ""
 
 #. module: project_stock

@@ -7,7 +7,7 @@
     "website": "https://github.com/OCA/project",
     "author": "Tecnativa, Odoo Community Association (OCA)",
     "license": "AGPL-3",
-    "depends": ["project", "stock"],
+    "depends": ["project", "stock", "stock_analytic"],
     "installable": True,
     "data": [
         "views/project_project_view.xml",

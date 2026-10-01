@@ -12,7 +12,7 @@
         
         """,
     'author': 'Liyben',
-    'depends': ['stock_account','stock_picking_analytic'],
+    'depends': ['stock_account','stock_picking_analytic','project_stock'],
     "data": [
         "views/product_category_views.xml",
     ],

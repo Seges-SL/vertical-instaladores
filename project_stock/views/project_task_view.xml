@@ -19,7 +19,7 @@
                     class="oe_stat_button"
                     name="action_view_delivery"
                     type="object"
-                    string="Entregas"
+                    string="Deliveries"
                     icon="fa-truck"
                     invisible="not done_stock_moves"
                     groups="stock.group_stock_user"

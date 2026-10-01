@@ -2,8 +2,6 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl)
 from odoo import api, fields, models
 
-import logging
-_logger = logging.getLogger(__name__)
 
 class StockMove(models.Model):
     _inherit = "stock.move"
@@ -72,7 +70,6 @@ class StockMove(models.Model):
                 new_amount -= (amount / 100) * distribution
             vals["amount"] = new_amount
         res.update(vals)
-        #_logger.debug("ANALYTIC LINE FROM TASK: %s\n", str(vals))
         return res
 
     @api.model

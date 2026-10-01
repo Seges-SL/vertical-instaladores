@@ -1,6 +1,7 @@
 # Copyright 2022-2024 Tecnativa - Víctor Martínez
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from odoo import fields
+from odoo.fields import Command
 from odoo.tests import Form
 from odoo.tests.common import users
 from odoo.tools import mute_logger
@@ -180,6 +181,39 @@ class TestProjectStock(TestProjectStockBase):
     def test_project_task_process_done_basic_user(self):
         self.test_project_task_process_done()
 
+    def test_project_task_multi_write_stage_done(self):
+        task_form = Form(
+            self.env["project.task"].with_context(**self._prepare_context_task())
+        )
+        task_form.name = "Test task 2"
+        task_form.save()
+        with task_form.move_ids.new() as move_form:
+            move_form.product_id = self.product_c
+            move_form.product_uom_qty = 1
+        task_2 = task_form.save()
+        tasks = self.task | task_2
+        tasks.write({"group_id": False})
+        self.task.stock_analytic_distribution = {self.analytic_account.id: 100}
+        tasks.write({"stage_id": self.stage_done.id})
+        for task in tasks:
+            self.assertEqual(task.group_id.name, f"Task-ID: {task.id}")
+            self.assertEqual(task.move_ids.group_id, task.group_id)
+            self.assertEqual(task.move_ids.task_id, task)
+            self.assertEqual(set(task.move_ids.mapped("state")), {"assigned"})
+        self.assertNotEqual(self.task.group_id, task_2.group_id)
+        self.assertEqual(
+            self.task.move_ids.mapped("analytic_distribution"),
+            [{str(self.analytic_account.id): 100}] * 2,
+        )
+        self.assertFalse(task_2.move_ids.analytic_distribution)
+
+    def test_project_task_stage_done_without_stock_group(self):
+        self.basic_user.write(
+            {"groups_id": [Command.set([self.env.ref("project.group_project_user").id])]}
+        )
+        self.task.with_user(self.basic_user).write({"stage_id": self.stage_done.id})
+        self.assertEqual(set(self.task.move_ids.mapped("state")), {"assigned"})
+
     @mute_logger("odoo.models.unlink")
     def test_project_task_process_cancel(self):
         self.task = self.env["project.task"].browse(self.task.id)
@@ -305,3 +339,16 @@ class TestProjectStock(TestProjectStockBase):
         )
         scrap.do_scrap()
         self.assertEqual(scrap.move_ids.raw_material_task_id, self.task)
+
+    def test_project_task_scrap_onchange_task(self):
+        task = self.env["project.task"].new(
+            {"project_id": self.project.id, "location_id": self.location_dest.id}
+        )
+        scrap = self.env["stock.scrap"].new({})
+        scrap.task_id = task
+        scrap._onchange_task_id()
+        self.assertEqual(scrap.location_id, self.location_dest)
+        # Without task location, the project location is used
+        task.location_id = False
+        scrap._onchange_task_id()
+        self.assertEqual(scrap.location_id, self.project.location_id)
