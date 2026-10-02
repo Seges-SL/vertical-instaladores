@@ -23,6 +23,10 @@
 ## Convenciones de este repo
 - Las especificaciones de módulos se guardan en `docs/specs/<modulo>.md`.
 - Cualquier módulo nuevo sigue las skills `odoo-comun` y `odoo-17-conventions`.
+- Módulos nuevos: `name` y `summary` del manifest en español; documentación en
+  `readme/*.md` (en español) e icono de la empresa;
+  `README.rst` y `static/description/index.html` se generan con `odoo-readme <modulo>`.
+  En módulos existentes no se crea esa estructura salvo que se pida.
 - No hagas `git commit` ni `git push`.
 - IMPORTANTE: `/opt/odoo-src/17.0/vertical-instaladores` es una copia de referencia de ESTE repo (la versión publicada). No la consultes: trabaja siempre con los archivos locales del repo.
   La copia `/opt/odoo-src/14.0/vertical-instaladores` sí es válida: es el origen de la migración.

@@ -15,7 +15,8 @@ valid-odoo-versions=17.0
 # unused-import, wrong-import-order).
 # manifest-required-author: por defecto exige "Odoo Community Association (OCA)";
 #   se desactiva para módulos privados. Actívalo en repos OCA.
-# missing-readme: actívalo si el repo sigue la estructura readme/ de OCA.
+# missing-readme sigue ACTIVO: los módulos nuevos llevan README.rst (odoo-readme).
+# En módulos heredados sin README no molesta: el hook solo muestra lo cambiado.
 disable=
     import-error,
     missing-module-docstring,
@@ -39,5 +40,4 @@ disable=
     missing-final-newline,
     trailing-newlines,
     unused-import,
-    manifest-required-author,
-    missing-readme
+    manifest-required-author
