@@ -48,7 +48,11 @@ Dos etapas:
    - Tests: `odoo-dev 17 tests <modulo>` (base de datos de tests nueva cada vez)
    - Log del servidor: `odoo-dev 17 log` · Interfaz: http://localhost:8069
    - Lint de lo cambiado: `python3 ~/.claude/hooks/odoo_lint.py --revisar <modulo>/`
-   - No arranques Odoo de ninguna otra forma. Cargar bases de datos (`bd-cargar`) lo decide
-     siempre el usuario.
+   - Con una copia de producción cargada: `odoo-dev 17 paridad` comprueba que el entorno
+     puede ejecutarla (módulos sin código, librerías que faltan en la imagen).
+   - Antes de instalar por primera vez un módulo de terceros: `odoo-dev 17 paridad <modulo>`
+     (código, importación y librerías del módulo y sus dependencias; no necesita la BD).
+   - No arranques Odoo de ninguna otra forma. Cargar, borrar o modificar bases de datos
+     (`bd-cargar`, `bd-borrar`, `bd-neutralizar`, `bd-claves`) lo decide siempre el usuario.
 2. **VPS de pruebas del cliente**: validación con datos reales. Al terminar una tarea, entrega
    un plan de prueba: qué módulos actualizar allí y qué casos comprobar en la interfaz.
