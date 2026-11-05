@@ -36,7 +36,13 @@
       "Bash(git reset *)",
       "Bash(git restore *)",
       "Bash(git switch *)",
-      "Bash(git clean *)"
+      "Bash(git clean *)",
+      "Bash(odoo-dev 14 bd-borrar *)",
+      "Bash(odoo-dev 17 bd-borrar *)",
+      "Bash(odoo-dev 14 bd-claves *)",
+      "Bash(odoo-dev 17 bd-claves *)",
+      "Bash(odoo-dev 14 bd-neutralizar*)",
+      "Bash(odoo-dev 17 bd-neutralizar*)"
     ]
   }
 }
