@@ -9,6 +9,14 @@
         <field name="arch" type="xml">
             <xpath expr="//page[@name='branches']" position="after">
                 <page string="Pie de página personalizado" name="custom_footer">
+                    <group string="Header image">
+                        <field name="report_header_image_replace"/>
+                        <field name="report_header_image" widget="image" options="{'size': [0, 90]}" invisible="not report_header_image_replace"/>
+                    </group>
+                    <group string="Custom footer">
+                        <field name="custom_report_footer_replace"/>
+                        <field name="custom_report_footer_keep_page_numbers" invisible="not custom_report_footer_replace"/>
+                    </group>
                     <field name="custom_report_footer" nolabel="1" widget="html" options="{'style-inline': true, 'codeview': true, 'dynamic_placeholder': true}"/>
                 </page>
             </xpath>

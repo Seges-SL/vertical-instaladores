@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="es" xml:lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Pie de página personalizado</title>
+  <style>
+body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; line-height: 1.5;
+       color: #212529; max-width: 60rem; margin: 1rem auto; padding: 0 1rem; }
+h1.title { font-size: 1.8rem; border-bottom: 2px solid #00666b; padding-bottom: .3rem; }
+h2 { font-size: 1.35rem; color: #00666b; margin-top: 1.6rem; }
+h3 { font-size: 1.1rem; }
+code { background: #f1f3f5; padding: .1rem .3rem; border-radius: 3px; }
+pre { background: #f1f3f5; padding: .75rem; border-radius: 4px; overflow-x: auto; }
+table { border-collapse: collapse; } td, th { border: 1px solid #dee2e6; padding: .3rem .6rem; }
+img { max-width: 100%; } nav#TOC { background: #f8f9fa; padding: .5rem 1rem; border-radius: 4px; }
+</style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Pie de página personalizado</h1>
+</header>
+<p><a href="https://www.gnu.org/licenses/agpl-3.0-standalone.html"><img
+src="https://img.shields.io/badge/licencia-AGPL--3-blue.png"
+alt="Licencia: AGPL-3" /></a> <img
+src="https://img.shields.io/badge/Odoo-17.0-875A7B.png"
+alt="Odoo 17.0" /></p>
+<p>Amplía el diseño de documentos externos de Odoo (estándar, negrita,
+caja y rayas) con dos opciones por compañía:</p>
+<ul>
+<li><strong>Cabecera por imagen</strong>: sustituye toda la cabecera
+estándar (logotipo, eslogan y datos de la compañía) por una imagen.</li>
+<li><strong>Pie personalizado</strong>: un pie en HTML que, según la
+opción elegida, se añade después del pie estándar (comportamiento
+histórico del módulo) o lo sustituye por completo, con la posibilidad de
+conservar la numeración de páginas.</li>
+</ul>
+<p>Con las opciones desactivadas (valores por defecto) los informes
+quedan exactamente igual que los de Odoo, o que antes de actualizar el
+módulo. Cada informe usa la configuración de la compañía del documento.
+Solo se ven afectados los diseños externos; el diseño interno no se
+modifica.</p>
+
+
+<h2 id="configuración">Configuración</h2>
+<p>La configuración se puede hacer en <strong>Ajustes &gt; Usuarios y
+compañías &gt; Compañías &gt; (compañía) &gt; pestaña «Pie de página
+personalizado»</strong> o en <strong>Ajustes &gt; Configurar diseño del
+documento</strong>. Se requieren permisos de Ajustes. La vista previa
+del asistente es orientativa: es HTML y no refleja exactamente el PDF
+(por ejemplo, la numeración de páginas no aparece en la vista
+previa).</p>
+<ul>
+<li><strong>Replace standard header with image</strong> (Sustituir la
+cabecera estándar por la imagen): activa la cabecera por imagen. Solo
+actúa si además se ha cargado la imagen.</li>
+<li><strong>Replace standard footer</strong> (Sustituir el pie
+estándar): si está activo, el pie personalizado sustituye todo el pie
+estándar. Si no, se añade tras el pie estándar. Si el pie personalizado
+está vacío no se sustituye nada.</li>
+<li><strong>Keep page numbers</strong> (Mantener la numeración de
+páginas): activo por defecto; al sustituir el pie, mantiene la banda
+«Página x / y» (solo PDF) bajo el pie personalizado.</li>
+</ul>
+<h3 id="tamaño-de-la-imagen-de-cabecera">Tamaño de la imagen de
+cabecera</h3>
+<p>Con el formato de papel por defecto (A4 europeo, margen superior de
+40 mm) el módulo limita la imagen a <strong>unos 37 mm de alto</strong>
+(margen superior − 3 mm) y a todo el ancho útil, respetando su
+proporción. No la amplía por encima de su tamaño natural; una imagen más
+alta se reduce y queda más estrecha y centrada.</p>
+<p>Tamaño recomendado para A4: ancho útil de unos 196 mm (210 mm menos 7
++ 7 mm de márgenes laterales) por el alto útil, a unos 250 ppp (≈ 10 px
+por mm), es decir, <strong>unos 1960 × 370 px</strong> por defecto.
+Formatos PNG o JPG.</p>
+<h3 id="cabecera-más-alta-opcional">Cabecera más alta (opcional)</h3>
+<p>Si se quiere una cabecera por imagen de más de unos 37 mm, cree un
+formato de papel propio (Ajustes &gt; Técnico &gt; Informes &gt;
+Formatos de papel, duplicando «A4») con un mayor
+<code>margen superior</code>, y <strong>selecciónelo en el asistente de
+diseño del documento</strong>. No edite el formato de papel compartido,
+porque es el predeterminado de todas las compañías.</p>
+<p>Aviso: los informes que definen su propio formato de papel ignoran el
+de la compañía.</p>
+<table>
+<thead>
+<tr class="header">
+<th>Margen superior</th>
+<th>Alto útil de la imagen</th>
+<th>Recomendado (A4)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>40 mm (por defecto)</td>
+<td>~37 mm</td>
+<td>1960 × 370 px</td>
+</tr>
+<tr class="even">
+<td>50 mm</td>
+<td>~47 mm</td>
+<td>1960 × 470 px</td>
+</tr>
+<tr class="odd">
+<td>60 mm</td>
+<td>~57 mm</td>
+<td>1960 × 570 px</td>
+</tr>
+</tbody>
+</table>
+<h3 id="pie-personalizado">Pie personalizado</h3>
+<p>Cuando sustituye al pie estándar, el pie queda limitado por el
+<strong>margen inferior del formato de papel</strong> (32 mm por defecto
+en A4 europeo). En el PDF, wkhtmltopdf recorta unos 4 mm por abajo, así
+que la altura útil real es menor:</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Caso (A4 europeo, margen inferior 32 mm)</th>
+<th>Altura útil del contenido</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Sin numeración (<code>Keep page numbers</code> desactivado)</td>
+<td><strong>~28 mm</strong></td>
+</tr>
+<tr class="even">
+<td>Con <code>Keep page numbers</code> (por defecto)</td>
+<td><strong>~23 mm</strong> de contenido, más la línea de numeración
+debajo</td>
+</tr>
+</tbody>
+</table>
+<p>Con otro formato de papel, el contenido se limita a
+<code>margen inferior − 9 mm</code> si se mantiene la numeración y al
+margen inferior si no.</p>
+<p><strong>Aviso:</strong> si el pie es más alto que el espacio
+disponible, <strong>su parte inferior se recorta SIN AVISO</strong>. Por
+eso hay que <strong>comprobarlo siempre en el PDF impreso, no en la
+vista previa</strong> del asistente, que es HTML y no refleja el
+recorte.</p>
+<h3 id="vista-de-código-html-del-pie">Vista de código HTML del pie</h3>
+<p>El campo del pie (en la compañía y en el asistente de diseño del
+documento) tiene activada la opción de vista de código: un botón
+<code>&lt;&gt;</code> permite ver y editar el HTML. <strong>Este botón
+solo aparece en modo desarrollador</strong> (Odoo lo exige además de la
+opción, que ya está activada en la vista).</p>
+<p>Ejemplo de pie con <strong>dos imágenes en la misma línea</strong>
+(imágenes en línea dentro de un <code>&lt;p&gt;</code>, de unos 12 mm de
+alto para que quepan en el pie):</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode html"><code class="sourceCode html"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">p</span> <span class="er">style</span><span class="ot">=</span><span class="st">&quot;text-align:center; margin:0;&quot;</span><span class="dt">&gt;</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">img</span> <span class="er">src</span><span class="ot">=</span><span class="st">&quot;/web/image/…logo1…&quot;</span> <span class="er">style</span><span class="ot">=</span><span class="st">&quot;height:12mm; margin-right:10mm;&quot;</span><span class="dt">/&gt;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">img</span> <span class="er">src</span><span class="ot">=</span><span class="st">&quot;/web/image/…logo2…&quot;</span> <span class="er">style</span><span class="ot">=</span><span class="st">&quot;height:12mm;&quot;</span><span class="dt">/&gt;</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;/</span><span class="kw">p</span><span class="dt">&gt;</span></span></code></pre></div>
+<h2 id="uso">Uso</h2>
+<ol type="1">
+<li>Configure las opciones en la compañía o en el asistente de diseño de
+documentos (ver la sección de configuración).</li>
+<li>Elija el diseño de documento (estándar, negrita, caja o rayas) en
+<strong>Ajustes &gt; Configurar diseño del documento</strong>; las
+opciones funcionan con los cuatro.</li>
+<li>Imprima cualquier documento externo (presupuesto, factura, etc.) de
+esa compañía: se verá la imagen de cabecera y/o el pie personalizado
+según las opciones activas.</li>
+<li>En empresas con varias compañías, cada documento usa la
+configuración de su propia compañía.</li>
+</ol>
+<p>Nota: la vista previa del asistente es HTML orientativa; la
+numeración de páginas y el recorte exacto solo se aprecian en el
+PDF.</p>
+<h2 id="limitaciones-y-mejoras-pendientes">Limitaciones y mejoras
+pendientes</h2>
+<ul>
+<li>La cabecera por imagen está limitada por la franja que wkhtmltopdf
+reserva (margen superior menos espaciado de cabecera); con el formato
+europeo por defecto es muy pequeña y hay que ajustar el formato de
+papel.</li>
+<li>No hay pie por imagen, solo pie HTML.</li>
+<li>No se modifica el diseño interno
+(<code>web.internal_layout</code>).</li>
+<li>Las dimensiones se calculan con el formato de papel de la compañía;
+un informe con formato de papel propio puede tener otra franja de
+cabecera.</li>
+</ul>
+<h2 id="incidencias">Incidencias</h2>
+<p>Si encuentras un error o tienes una propuesta de mejora, comunícalo
+al equipo de desarrollo de Seges indicando el módulo, la versión y los
+pasos para reproducirlo.</p>
+<h2 id="créditos">Créditos</h2>
+<h4 id="autores">Autores</h4>
+<ul>
+<li>Seges</li>
+</ul>
+<h4 id="mantenimiento">Mantenimiento</h4>
+<p>Este módulo lo mantiene Seges.</p>
+<p>Forma parte del repositorio <a
+href="https://github.com/Seges-SL/vertical-instaladores/tree/17.0/custom_footer_by_company">Seges-SL/vertical-instaladores</a>.</p>
+</body>
+</html>

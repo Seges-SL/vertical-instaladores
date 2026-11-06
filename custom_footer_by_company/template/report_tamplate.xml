@@ -1,38 +1,222 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <template id="external_layout_standard" inherit_id="web.external_layout_standard" >
-        
-        <!-- support for custom footer -->
+    <template id="external_layout_standard" inherit_id="web.external_layout_standard">
+
+        <!-- Header: the standard header is hidden when it is replaced by the image -->
+        <xpath expr="//div[@t-att-style='report_header_style']" position="attributes">
+            <attribute name="t-if">not (company.report_header_image_replace and company.report_header_image)</attribute>
+        </xpath>
+        <!--
+            Alternative header with the image. The image height is capped at
+            (margin_top - 3) mm, i.e. a space equivalent to the standard header,
+            so it does not overlap the body. QtWebKit has no object-fit, so the
+            size is limited with max-width/max-height (keeps the aspect ratio)
+            using the paperformat of the company (37 mm if there is none).
+        -->
+        <xpath expr="//div[@t-att-style='report_header_style']" position="before">
+            <div t-attf-class="header o_company_#{company.id}_layout"
+                 t-if="company.report_header_image_replace and company.report_header_image"
+                 style="text-align: center;">
+                <t t-set="cfbc_paperformat" t-value="company.paperformat_id"/>
+                <t t-set="cfbc_header_mm"
+                   t-value="(cfbc_paperformat.margin_top - 3) if cfbc_paperformat else 37"/>
+                <img t-att-src="image_data_uri(company.report_header_image)"
+                     t-attf-style="max-width: 100%; max-height: #{cfbc_header_mm if cfbc_header_mm &gt; 1 else 1}mm;"
+                     alt="Header"/>
+            </div>
+        </xpath>
+
+        <!-- Footer: the standard footer is hidden when the custom footer replaces it -->
+        <xpath expr="//div[contains(@t-attf-class, 'o_standard_footer')]" position="attributes">
+            <attribute name="t-if">not (company.custom_report_footer_replace and not is_html_empty(company.custom_report_footer))</attribute>
+        </xpath>
+        <xpath expr="//div[contains(@t-attf-class, 'o_standard_footer')]" position="before">
+            <div t-attf-class="footer o_company_#{company.id}_layout"
+                 t-if="company.custom_report_footer_replace and not is_html_empty(company.custom_report_footer)"
+                 t-attf-style="max-height: #{company.paperformat_id.margin_bottom if company.paperformat_id else 20}mm; overflow: hidden;">
+                <div class="text-center">
+                    <t t-set="cfbc_footer_mb" t-value="company.paperformat_id.margin_bottom if company.paperformat_id else 20"/>
+                    <t t-set="cfbc_footer_mm" t-value="(cfbc_footer_mb - 9) if company.custom_report_footer_keep_page_numbers else cfbc_footer_mb"/>
+                    <div t-attf-style="max-height: #{cfbc_footer_mm if cfbc_footer_mm &gt; 1 else 1}mm; overflow: hidden;">
+                        <div t-field="company.custom_report_footer"/>
+                    </div>
+                    <div t-if="company.custom_report_footer_keep_page_numbers and report_type == 'pdf'"
+                         class="text-muted o_cfbc_page_numbers" style="padding-bottom: 4mm;">
+                        Page: <span class="page"/> / <span class="topage"/>
+                    </div>
+                </div>
+            </div>
+        </xpath>
+
+        <!-- Legacy: the custom footer is appended after the standard report_footer -->
         <div t-field="company.report_footer" position="after">
-            <div t-field="company.custom_report_footer"/>
+            <div t-if="not company.custom_report_footer_replace" t-field="company.custom_report_footer"/>
         </div>
 
     </template>
 
-    <template id="external_layout_bold" inherit_id="web.external_layout_bold" >
+    <template id="external_layout_bold" inherit_id="web.external_layout_bold">
 
-        <!-- support for custom footer -->
+        <!-- Header: the standard header is hidden when it is replaced by the image -->
+        <xpath expr="//div[@t-att-style='report_header_style']" position="attributes">
+            <attribute name="t-if">not (company.report_header_image_replace and company.report_header_image)</attribute>
+        </xpath>
+        <!--
+            Alternative header with the image. The image height is capped at
+            (margin_top - 3) mm, i.e. a space equivalent to the standard header,
+            so it does not overlap the body. QtWebKit has no object-fit, so the
+            size is limited with max-width/max-height (keeps the aspect ratio)
+            using the paperformat of the company (37 mm if there is none).
+        -->
+        <xpath expr="//div[@t-att-style='report_header_style']" position="before">
+            <div t-attf-class="header o_company_#{company.id}_layout"
+                 t-if="company.report_header_image_replace and company.report_header_image"
+                 style="text-align: center;">
+                <t t-set="cfbc_paperformat" t-value="company.paperformat_id"/>
+                <t t-set="cfbc_header_mm"
+                   t-value="(cfbc_paperformat.margin_top - 3) if cfbc_paperformat else 37"/>
+                <img t-att-src="image_data_uri(company.report_header_image)"
+                     t-attf-style="max-width: 100%; max-height: #{cfbc_header_mm if cfbc_header_mm &gt; 1 else 1}mm;"
+                     alt="Header"/>
+            </div>
+        </xpath>
+
+        <!-- Footer: the standard footer is hidden when the custom footer replaces it -->
+        <xpath expr="//div[contains(@t-attf-class, 'o_clean_footer')]" position="attributes">
+            <attribute name="t-if">not (company.custom_report_footer_replace and not is_html_empty(company.custom_report_footer))</attribute>
+        </xpath>
+        <xpath expr="//div[contains(@t-attf-class, 'o_clean_footer')]" position="before">
+            <div t-attf-class="footer o_company_#{company.id}_layout"
+                 t-if="company.custom_report_footer_replace and not is_html_empty(company.custom_report_footer)"
+                 t-attf-style="max-height: #{company.paperformat_id.margin_bottom if company.paperformat_id else 20}mm; overflow: hidden;">
+                <div class="text-center">
+                    <t t-set="cfbc_footer_mb" t-value="company.paperformat_id.margin_bottom if company.paperformat_id else 20"/>
+                    <t t-set="cfbc_footer_mm" t-value="(cfbc_footer_mb - 9) if company.custom_report_footer_keep_page_numbers else cfbc_footer_mb"/>
+                    <div t-attf-style="max-height: #{cfbc_footer_mm if cfbc_footer_mm &gt; 1 else 1}mm; overflow: hidden;">
+                        <div t-field="company.custom_report_footer"/>
+                    </div>
+                    <div t-if="company.custom_report_footer_keep_page_numbers and report_type == 'pdf'"
+                         class="text-muted o_cfbc_page_numbers" style="padding-bottom: 4mm;">
+                        Page: <span class="page"/> / <span class="topage"/>
+                    </div>
+                </div>
+            </div>
+        </xpath>
+
+        <!-- Legacy: the custom footer is appended after the standard report_footer -->
         <span t-field="company.report_footer" position="after">
-            <div t-field="company.custom_report_footer"/>
+            <div t-if="not company.custom_report_footer_replace" t-field="company.custom_report_footer"/>
         </span>
 
     </template>
 
-    <template id="external_layout_boxed" inherit_id="web.external_layout_boxed" >
+    <template id="external_layout_boxed" inherit_id="web.external_layout_boxed">
 
-        <!-- support for custom footer -->
+        <!-- Header: the standard header is hidden when it is replaced by the image -->
+        <xpath expr="//div[@t-att-style='report_header_style']" position="attributes">
+            <attribute name="t-if">not (company.report_header_image_replace and company.report_header_image)</attribute>
+        </xpath>
+        <!--
+            Alternative header with the image. The image height is capped at
+            (margin_top - 3) mm, i.e. a space equivalent to the standard header,
+            so it does not overlap the body. QtWebKit has no object-fit, so the
+            size is limited with max-width/max-height (keeps the aspect ratio)
+            using the paperformat of the company (37 mm if there is none).
+        -->
+        <xpath expr="//div[@t-att-style='report_header_style']" position="before">
+            <div t-attf-class="header o_company_#{company.id}_layout"
+                 t-if="company.report_header_image_replace and company.report_header_image"
+                 style="text-align: center;">
+                <t t-set="cfbc_paperformat" t-value="company.paperformat_id"/>
+                <t t-set="cfbc_header_mm"
+                   t-value="(cfbc_paperformat.margin_top - 3) if cfbc_paperformat else 37"/>
+                <img t-att-src="image_data_uri(company.report_header_image)"
+                     t-attf-style="max-width: 100%; max-height: #{cfbc_header_mm if cfbc_header_mm &gt; 1 else 1}mm;"
+                     alt="Header"/>
+            </div>
+        </xpath>
+
+        <!-- Footer: the standard footer is hidden when the custom footer replaces it -->
+        <xpath expr="//div[contains(@t-attf-class, 'o_boxed_footer')]" position="attributes">
+            <attribute name="t-if">not (company.custom_report_footer_replace and not is_html_empty(company.custom_report_footer))</attribute>
+        </xpath>
+        <xpath expr="//div[contains(@t-attf-class, 'o_boxed_footer')]" position="before">
+            <div t-attf-class="footer o_company_#{company.id}_layout"
+                 t-if="company.custom_report_footer_replace and not is_html_empty(company.custom_report_footer)"
+                 t-attf-style="max-height: #{company.paperformat_id.margin_bottom if company.paperformat_id else 20}mm; overflow: hidden;">
+                <div class="text-center">
+                    <t t-set="cfbc_footer_mb" t-value="company.paperformat_id.margin_bottom if company.paperformat_id else 20"/>
+                    <t t-set="cfbc_footer_mm" t-value="(cfbc_footer_mb - 9) if company.custom_report_footer_keep_page_numbers else cfbc_footer_mb"/>
+                    <div t-attf-style="max-height: #{cfbc_footer_mm if cfbc_footer_mm &gt; 1 else 1}mm; overflow: hidden;">
+                        <div t-field="company.custom_report_footer"/>
+                    </div>
+                    <div t-if="company.custom_report_footer_keep_page_numbers and report_type == 'pdf'"
+                         class="text-muted o_cfbc_page_numbers" style="padding-bottom: 4mm;">
+                        Page: <span class="page"/> / <span class="topage"/>
+                    </div>
+                </div>
+            </div>
+        </xpath>
+
+        <!-- Legacy: the custom footer is appended after the standard report_footer -->
         <div t-field="company.report_footer" position="after">
-            <div t-field="company.custom_report_footer"/>
+            <div t-if="not company.custom_report_footer_replace" t-field="company.custom_report_footer"/>
         </div>
-        
+
     </template>
 
-    <template id="external_layout_striped" inherit_id="web.external_layout_striped" >
-        
-        <!-- support for custom footer -->
+    <template id="external_layout_striped" inherit_id="web.external_layout_striped">
+
+        <!-- Header: the standard header is hidden when it is replaced by the image -->
+        <xpath expr="//div[@t-att-style='report_header_style']" position="attributes">
+            <attribute name="t-if">not (company.report_header_image_replace and company.report_header_image)</attribute>
+        </xpath>
+        <!--
+            Alternative header with the image. The image height is capped at
+            (margin_top - 3) mm, i.e. a space equivalent to the standard header,
+            so it does not overlap the body. QtWebKit has no object-fit, so the
+            size is limited with max-width/max-height (keeps the aspect ratio)
+            using the paperformat of the company (37 mm if there is none).
+        -->
+        <xpath expr="//div[@t-att-style='report_header_style']" position="before">
+            <div t-attf-class="header o_company_#{company.id}_layout"
+                 t-if="company.report_header_image_replace and company.report_header_image"
+                 style="text-align: center;">
+                <t t-set="cfbc_paperformat" t-value="company.paperformat_id"/>
+                <t t-set="cfbc_header_mm"
+                   t-value="(cfbc_paperformat.margin_top - 3) if cfbc_paperformat else 37"/>
+                <img t-att-src="image_data_uri(company.report_header_image)"
+                     t-attf-style="max-width: 100%; max-height: #{cfbc_header_mm if cfbc_header_mm &gt; 1 else 1}mm;"
+                     alt="Header"/>
+            </div>
+        </xpath>
+
+        <!-- Footer: the standard footer is hidden when the custom footer replaces it -->
+        <xpath expr="//div[contains(@t-attf-class, 'o_background_footer')]" position="attributes">
+            <attribute name="t-if">not (company.custom_report_footer_replace and not is_html_empty(company.custom_report_footer))</attribute>
+        </xpath>
+        <xpath expr="//div[contains(@t-attf-class, 'o_background_footer')]" position="before">
+            <div t-attf-class="footer o_company_#{company.id}_layout"
+                 t-if="company.custom_report_footer_replace and not is_html_empty(company.custom_report_footer)"
+                 t-attf-style="max-height: #{company.paperformat_id.margin_bottom if company.paperformat_id else 20}mm; overflow: hidden;">
+                <div class="text-center">
+                    <t t-set="cfbc_footer_mb" t-value="company.paperformat_id.margin_bottom if company.paperformat_id else 20"/>
+                    <t t-set="cfbc_footer_mm" t-value="(cfbc_footer_mb - 9) if company.custom_report_footer_keep_page_numbers else cfbc_footer_mb"/>
+                    <div t-attf-style="max-height: #{cfbc_footer_mm if cfbc_footer_mm &gt; 1 else 1}mm; overflow: hidden;">
+                        <div t-field="company.custom_report_footer"/>
+                    </div>
+                    <div t-if="company.custom_report_footer_keep_page_numbers and report_type == 'pdf'"
+                         class="text-muted o_cfbc_page_numbers" style="padding-bottom: 4mm;">
+                        Page: <span class="page"/> / <span class="topage"/>
+                    </div>
+                </div>
+            </div>
+        </xpath>
+
+        <!-- Legacy: the custom footer is appended after the standard report_footer -->
         <div t-field="company.report_footer" position="after">
-            <div t-field="company.custom_report_footer"/>
+            <div t-if="not company.custom_report_footer_replace" t-field="company.custom_report_footer"/>
         </div>
 
     </template>

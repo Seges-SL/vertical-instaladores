@@ -1,0 +1,79 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+#	* custom_footer_by_company
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 17.0\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Language: es\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. module: custom_footer_by_company
+#: model:ir.model.fields,field_description:custom_footer_by_company.field_res_company__report_header_image
+#: model:ir.model.fields,field_description:custom_footer_by_company.field_base_document_layout__report_header_image
+msgid "Report Header Image"
+msgstr "Imagen de cabecera del informe"
+
+#. module: custom_footer_by_company
+#: model:ir.model.fields,field_description:custom_footer_by_company.field_res_company__report_header_image_replace
+#: model:ir.model.fields,field_description:custom_footer_by_company.field_base_document_layout__report_header_image_replace
+msgid "Replace standard header with image"
+msgstr "Sustituir la cabecera estándar por la imagen"
+
+#. module: custom_footer_by_company
+#: model:ir.model.fields,field_description:custom_footer_by_company.field_res_company__custom_report_footer_replace
+#: model:ir.model.fields,field_description:custom_footer_by_company.field_base_document_layout__custom_report_footer_replace
+msgid "Replace standard footer"
+msgstr "Sustituir el pie estándar"
+
+#. module: custom_footer_by_company
+#: model:ir.model.fields,field_description:custom_footer_by_company.field_res_company__custom_report_footer_keep_page_numbers
+#: model:ir.model.fields,field_description:custom_footer_by_company.field_base_document_layout__custom_report_footer_keep_page_numbers
+msgid "Keep page numbers"
+msgstr "Mantener la numeración de páginas"
+
+#. module: custom_footer_by_company
+#: model:ir.model.fields,help:custom_footer_by_company.field_res_company__report_header_image
+#: model:ir.model.fields,help:custom_footer_by_company.field_base_document_layout__report_header_image
+msgid "Image that replaces the whole header of the external report layouts when 'Replace standard header with image' is enabled. It is scaled down to fit the header area of the paper format (top margin minus 3 mm, about 37 mm with the default European A4 format)."
+msgstr "Imagen que sustituye toda la cabecera de los diseños de informe externos cuando está activada la opción «Sustituir la cabecera estándar por la imagen». Se reduce para ajustarse a la zona de cabecera del formato de papel (margen superior menos 3 mm, unos 37 mm con el formato A4 europeo por defecto)."
+
+#. module: custom_footer_by_company
+#: model:ir.model.fields,help:custom_footer_by_company.field_res_company__report_header_image_replace
+#: model:ir.model.fields,help:custom_footer_by_company.field_base_document_layout__report_header_image_replace
+msgid "If enabled (and there is a header image), the standard header of the external report layouts is replaced by the image."
+msgstr "Si está activado (y hay una imagen de cabecera), la cabecera estándar de los diseños de informe externos se sustituye por la imagen."
+
+#. module: custom_footer_by_company
+#: model:ir.model.fields,help:custom_footer_by_company.field_res_company__custom_report_footer_replace
+#: model:ir.model.fields,help:custom_footer_by_company.field_base_document_layout__custom_report_footer_replace
+msgid "If enabled, the custom footer replaces the whole standard footer of the external report layouts. If disabled, the custom footer is added after the standard report footer."
+msgstr "Si está activado, el pie personalizado sustituye todo el pie estándar de los diseños de informe externos. Si está desactivado, el pie personalizado se añade después del pie estándar del informe."
+
+#. module: custom_footer_by_company
+#: model:ir.model.fields,help:custom_footer_by_company.field_res_company__custom_report_footer_keep_page_numbers
+#: model:ir.model.fields,help:custom_footer_by_company.field_base_document_layout__custom_report_footer_keep_page_numbers
+msgid "When the custom footer replaces the standard footer, keep the page numbering band (Page x / y, PDF only) below it."
+msgstr "Cuando el pie personalizado sustituye al pie estándar, mantiene debajo la banda de numeración de páginas (Página x / y, solo PDF)."
+
+#. module: custom_footer_by_company
+#: model_terms:ir.ui.view,arch_db:custom_footer_by_company.view_res_company_form
+msgid "Header image"
+msgstr "Imagen de cabecera"
+
+#. module: custom_footer_by_company
+#: model_terms:ir.ui.view,arch_db:custom_footer_by_company.view_res_company_form
+msgid "Custom footer"
+msgstr "Pie personalizado"
+
+#. module: custom_footer_by_company
+#: model_terms:ir.ui.view,arch_db:custom_footer_by_company.external_layout_standard
+#: model_terms:ir.ui.view,arch_db:custom_footer_by_company.external_layout_bold
+#: model_terms:ir.ui.view,arch_db:custom_footer_by_company.external_layout_boxed
+#: model_terms:ir.ui.view,arch_db:custom_footer_by_company.external_layout_striped
+msgid "Page: <span class=\"page\"/> / <span class=\"topage\"/>"
+msgstr "Página: <span class=\"page\"/> / <span class=\"topage\"/>"
+

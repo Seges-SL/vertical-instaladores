@@ -2,7 +2,7 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 {
     'name': 'Pie de página personalizado',
-    'version': '17.0.1.0.0',
+    'version': '17.0.2.0.0',
     'summary': """ Pie de página personalizado """,
     'author': 'Seges',
     'website': 'seges.es',
